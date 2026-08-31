@@ -1,0 +1,75 @@
+import { betterAuth } from "better-auth";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import {
+  organization,
+  createAccessControl,
+  admin as adminPlugin,
+} from "better-auth/plugins";
+import { db } from "../db/index.js";
+import * as schema from "../db/schema.js";
+
+const statement = {
+  organization: ["update", "delete"],
+  member: ["create", "read", "update", "delete"],
+  customers: ["create", "read", "update", "delete"],
+  reports: ["create", "read", "update", "delete"],
+  invitation: ["create", "read", "cancel"],
+} as const;
+
+const ac = createAccessControl(statement);
+
+const owner = ac.newRole({
+  organization: ["update", "delete"],
+  member: ["create", "read", "update", "delete"],
+  customers: ["create", "read", "update", "delete"],
+  invitation: ["create", "read", "cancel"],
+  reports: ["create", "read", "update", "delete"],
+});
+
+const admin = ac.newRole({
+  customers: ["create", "read", "update", "delete"],
+  member: ["create", "read", "update"],
+  invitation: ["create", "read", "cancel"],
+  reports: ["create", "read", "update", "delete"],
+});
+
+const engineer = ac.newRole({
+  member: ["read"],
+  reports: ["create", "read", "update"],
+  customers: ["create", "read", "update"],
+});
+
+const technician = ac.newRole({
+  member: ["read"],
+  reports: ["create", "read"],
+  customers: ["read"],
+});
+
+const viewer = ac.newRole({
+  reports: ["read"],
+});
+
+export const auth = betterAuth({
+  database: drizzleAdapter(db, {
+    provider: "pg",
+    schema: {
+      ...schema,
+    },
+  }),
+  emailAndPassword: {
+    enabled: true,
+  },
+  plugins: [
+    adminPlugin(),
+    organization({
+      ac,
+      roles: {
+        owner,
+        admin,
+        engineer,
+        technician,
+        viewer,
+      },
+    }),
+  ],
+});
