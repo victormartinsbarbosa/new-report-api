@@ -5,8 +5,19 @@ export async function authenticate(
   request: FastifyRequest,
   reply: FastifyReply,
 ) {
+  const headers = new Headers();
+  Object.entries(request.headers).forEach(([key, value]) => {
+    if (value !== undefined) {
+      if (Array.isArray(value)) {
+        value.forEach((v) => headers.append(key, v));
+      } else {
+        headers.set(key, value);
+      }
+    }
+  });
+
   const session = await auth.api.getSession({
-    headers: request.headers as Record<string, string>,
+    headers,
   });
 
   if (!session) {
