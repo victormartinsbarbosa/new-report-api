@@ -7,7 +7,21 @@ const app = Fastify({
 });
 
 await app.register(cors, {
-  origin: "http://localhost:3000",
+  origin: (origin, cb) => {
+    const allowedOrigins = [
+      "http://localhost:3000",
+      "http://localhost:3001",
+      process.env.FRONTEND_URL,
+      "https://new-report-five.vercel.app",
+    ].filter(Boolean);
+
+    if (!origin || allowedOrigins.includes(origin)) {
+      cb(null, true);
+      return;
+    }
+
+    cb(new Error("Not allowed by CORS"), false);
+  },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
 });
