@@ -49,9 +49,15 @@ const viewer = ac.newRole({
   reports: ["read"],
 });
 
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:3001",
+  process.env.FRONTEND_URL,
+].filter(Boolean) as string[];
+
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3001",
-  trustedOrigins: ["http://localhost:3000"],
+  trustedOrigins: allowedOrigins,
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: {
