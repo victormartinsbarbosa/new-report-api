@@ -53,6 +53,7 @@ const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:3001",
   process.env.FRONTEND_URL,
+  "https://new-report-five.vercel.app",
 ].filter(Boolean) as string[];
 
 export const auth = betterAuth({
