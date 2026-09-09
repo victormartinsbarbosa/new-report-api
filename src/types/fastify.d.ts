@@ -4,7 +4,7 @@ declare module "fastify" {
   interface FastifyRequest {
     user?: User;
     session?: Session & {
-      activeOrganizationId?: string;
+      activeOrganizationId?: string | null | undefined;
     };
   }
 }
