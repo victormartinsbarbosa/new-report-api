@@ -1,6 +1,7 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import { handleAuthRequest } from "./lib/auth-adapter.js";
+import { customerRoutes } from "./modules/customers/customers.routes.js";
 
 const app = Fastify({
   logger: true,
@@ -31,6 +32,7 @@ app.get("/health", async () => {
 });
 
 app.all("/api/auth/*", handleAuthRequest);
+app.register(customerRoutes);
 
 const start = async () => {
   try {

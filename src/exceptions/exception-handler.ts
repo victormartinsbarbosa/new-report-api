@@ -1,5 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { NewReportException } from "./new-report-exception.js";
+import { ZodError } from "zod";
 
 export function setupExceptionHandler(app: FastifyInstance) {
   app.setErrorHandler((error, request, reply) => {
@@ -11,6 +12,21 @@ export function setupExceptionHandler(app: FastifyInstance) {
         detail: error.message,
         instance: request.url,
         ...(error.details ? { invalidParams: error.details } : {}),
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    if (error instanceof ZodError) {
+      return reply.status(400).send({
+        type: "https://api.seuapp.com/errors/validation-error",
+        title: "BAD_REQUEST",
+        status: 400,
+        detail: "Dados inválidos enviados na requisição.",
+        instance: request.url,
+        invalidParams: error.issues.map((issue) => ({
+          field: issue.path.join("."),
+          message: issue.message,
+        })),
         timestamp: new Date().toISOString(),
       });
     }
