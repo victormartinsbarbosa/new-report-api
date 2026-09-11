@@ -130,9 +130,9 @@ export const organization = pgTable("organization", {
   metadata: text("metadata"),
   gatewayCustomerId: text("gateway_customer_id").unique(),
   reportsUsedThisMonth: integer("reports_used_this_month").default(0).notNull(),
-  document: text("document"), // CNPJ
-  corporateName: text("corporate_name"), // Razão Social
-  stateRegistration: text("state_registration"), // Inscrição Estadual (IE)
+  document: text("document"),
+  corporateName: text("corporate_name"),
+  stateRegistration: text("state_registration"),
   phone: text("phone"),
   address: text("address"),
   ...timestamps,

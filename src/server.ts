@@ -5,6 +5,7 @@ import { customerRoutes } from "./modules/customers/customers.routes.js";
 
 const app = Fastify({
   logger: true,
+  trustProxy: true,
 });
 
 await app.register(cors, {
